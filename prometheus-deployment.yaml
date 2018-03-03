@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: prometheus
+  namespace: conduit
+  labels:
+    app: prometheus
+    conduit.io/plane: control
+  annotations:
+    conduit.io/created-by: "conduit/cli v0.1.1"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        conduit.io/plane: control
+      annotations:
+        conduit.io/created-by: "conduit/cli v0.1.1"
+    spec:
+      volumes:
+      - name: prometheus-config
+        configMap:
+          name: prometheus-config
+      containers:
+      - name: prometheus
+        ports:
+        - name: http
+          containerPort: 9090
+        volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus
+          readOnly: true
+        image: prom/prometheus:v1.8.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - "-storage.local.retention=6h"
+        - "-storage.local.memory-chunks=500000"
+        - "-config.file=/etc/prometheus/prometheus.yml"
+
+      # TODO remove/replace?
+      - name: kubectl
+        image: buoyantio/kubectl:v1.6.2
+        args: ["proxy", "-p", "8001"]

@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: proxy-api
+  namespace: conduit
+  labels:
+    app: controller
+    conduit.io/plane: control
+  annotations:
+    conduit.io/created-by: "conduit/cli v0.1.1"
+spec:
+  type: ClusterIP
+  selector:
+    app: controller
+  ports:
+  - name: grpc
+    port: 8086
+    targetPort: 8086

@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: web
+  namespace: conduit
+  labels:
+    app: web
+    conduit.io/plane: control
+  annotations:
+    conduit.io/created-by: "conduit/cli v0.1.1"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web
+        conduit.io/plane: control
+      annotations:
+        conduit.io/created-by: "conduit/cli v0.1.1"
+    spec:
+      containers:
+      - name: web
+        ports:
+        - name: http
+          containerPort: 8084
+        - name: admin-http
+          containerPort: 9994
+        image: grapestree/runconduit-web:v0.1.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - "-addr=:8084"
+        - "-metrics-addr=:9994"
+        - "-api-addr=172.17.0.10:8085"
+        - "-static-dir=/dist"
+        - "-template-dir=/templates"
+        - "-uuid=4d10caa1-cf46-49ed-a7a6-883a1ddba688"
